@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "PlatformIO": {
+      "source": "synqing/k1.hardware",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/PlatformIO/SKILL.md",
+      "computedHash": "d29740a81c256fb2b9581bd7868d17fc87b77717e707467b822551f04813a9e3"
+    },
+    "clang": {
+      "source": "mohitmishra786/low-level-dev-skills",
+      "sourceType": "github",
+      "skillPath": "skills/compilers/clang/SKILL.md",
+      "computedHash": "8ab6e99d2bdf0244aace28c4509cff1d6d153196185c472985ccb698e139e6e6"
+    },
+    "esp32-firmware-engineer": {
+      "source": "adamlipecz/esp32-firmware-engineer-skill",
+      "sourceType": "github",
+      "skillPath": "esp32-firmware-engineer/SKILL.md",
+      "computedHash": "648876c56ccba5f8c2fd37979e3d254745e4c4d5fd76572a2c790af90fa2a2f5"
+    },
+    "mqtt-development": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "mqtt-development/SKILL.md",
+      "computedHash": "b45982e5410605159233eacb0a892132602633146ac187a1bb8469076e550904"
+    }
+  }
+}

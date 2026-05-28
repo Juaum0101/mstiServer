@@ -1,0 +1,178 @@
+<div *ngIf="!isAdmin" class="max-w-[600px] mx-auto mt-20 p-8 blueprint-card bg-error-container/10 border-error/30 text-center">
+  <span class="material-symbols-outlined text-6xl text-error mb-4">gavel</span>
+  <h2 class="font-headline-lg text-error">ACCESS DENIED</h2>
+  <p class="font-body-md text-on-surface-variant mt-2">Only the active Administrator (monruse) may access the Kingdom Archives and System Overrides.</p>
+</div>
+
+<div *ngIf="isAdmin" class="max-w-[1200px] mx-auto p-8">
+  <div class="mb-12 border-b border-outline-variant pb-6 flex items-end justify-between">
+    <div>
+        <p class="font-label-sm text-primary mb-2 uppercase tracking-widest flex items-center gap-2">
+            <span class="w-2 h-2 bg-primary rotate-45 inline-block"></span>
+            Admin Protocol Active
+        </p>
+        <h2 class="font-headline-lg-mobile md:font-headline-lg text-on-surface">MSK: System Override (Admin)</h2>
+    </div>
+    <div class="hidden md:flex items-center gap-2 text-outline">
+        <span class="material-symbols-outlined text-sm">memory</span>
+        <span class="font-label-sm">SYSTEM STABLE</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div class="md:col-span-8 space-y-6">
+        <section class="blueprint-card bg-surface-container-low p-6">
+            <div class="flex items-center justify-between mb-6 border-b border-outline/30 pb-4">
+                <h3 class="font-title-md text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">gavel</span>
+                    Global Engagement Rules
+                </h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">science</span>
+                        <span class="font-body-md text-on-surface">Mutations Allowed</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="mutationsAllowed" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">crisis_alert</span>
+                        <span class="font-body-md text-on-surface">Marks Active</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="marksActive" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">swords</span>
+                        <span class="font-body-md text-on-surface">Techniques Enabled</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="techniquesEnabled" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">visibility</span>
+                        <span class="font-body-md text-on-surface">Class Visibility</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="classVisibility" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">badge</span>
+                        <span class="font-body-md text-on-surface">Names Visible</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="namesVisible" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-card bg-surface-container-low p-6">
+            <h3 class="font-title-md text-primary mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">map</span>
+                Environmental Telemetry
+            </h3>
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <label class="font-body-md text-on-surface block mb-1">Fog of War Visibility Range</label>
+                        <span class="font-label-sm text-outline">Hex radius from controlled units</span>
+                    </div>
+                    <div class="bg-surface-variant border border-outline-variant px-3 py-1 flex items-center justify-center font-label-sm text-primary min-w-[60px]">
+                        {{ fogRange }}
+                    </div>
+                </div>
+                <input type="range" [(ngModel)]="fogRange" min="1" max="10" class="w-full appearance-none bg-transparent">
+                <div class="flex justify-between text-outline text-xs mt-2 font-label-sm">
+                    <span>1 Hex (Claustrophobic)</span>
+                    <span>10 Hexes (Omniscient)</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="blueprint-card bg-error-container/10 border-error/30 p-6 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-error/10 pointer-events-none">
+                <span class="material-symbols-outlined text-9xl">warning</span>
+            </div>
+            <div class="relative z-10">
+                <h3 class="font-title-md text-error mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+                    Training Protocols
+                </h3>
+                <div class="flex items-start justify-between bg-surface-container/50 border border-error/20 p-4 mb-4">
+                    <div>
+                        <span class="font-body-md text-on-surface block mb-1">Newbie Mode</span>
+                        <span class="font-label-sm text-error/80 block max-w-[200px]">Reduces damage variance and extends phase timers. Highly irregular for ranked play.</span>
+                    </div>
+                    <label class="flex items-center cursor-pointer mt-1">
+                        <div class="relative">
+                            <input type="checkbox" [(ngModel)]="newbieMode" class="sr-only toggle-checkbox">
+                            <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-error/30"></div>
+                            <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="md:col-span-4 space-y-6">
+        <section class="blueprint-card bg-surface-container-low p-6">
+            <h3 class="font-title-md text-primary mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">timer</span>
+                Temporal Constraints
+            </h3>
+            <div class="space-y-6">
+                <div>
+                    <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Per-Turn Limit (Sec)</label>
+                    <input type="number" [(ngModel)]="perTurnLimit" class="w-full bg-surface-variant border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-on-surface font-label-sm px-0 py-2">
+                </div>
+                <div>
+                    <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Match Chess-Timer (Min)</label>
+                    <input type="number" [(ngModel)]="matchTimer" class="w-full bg-surface-variant border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-on-surface font-label-sm px-0 py-2">
+                </div>
+            </div>
+        </section>
+        
+        <button (click)="forceStartMatch()" class="gold-btn w-full bg-primary text-on-primary font-title-md py-4 border border-primary-container hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+            Force Start Match
+        </button>
+        
+        <button (click)="forceResetGame()" class="gold-btn w-full bg-error text-on-error font-title-md py-4 mt-2 border border-error-container hover:opacity-80 transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restart_alt</span>
+            Hard Reset Server
+        </button>
+    </div>
+  </div>
+</div>

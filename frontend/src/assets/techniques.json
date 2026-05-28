@@ -1,0 +1,800 @@
+[
+  {
+    "header_information": {
+      "name": "Light Attack",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "1",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Weapon-Tied"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Attack",
+      "range_units": "Melee",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Deal [Weapon Rating] damage.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "A swift strike utilizing the equipped weapon's base rating."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Heavy Attack",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "3",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Weapon-Tied"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Attack",
+      "range_units": "Melee",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Deal [Weapon Rating + 2] damage.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "A heavy, stamina-draining strike that adds substantial force to the weapon."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Dodge Roll",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "2",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Movement",
+      "range_units": "1",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Move to a chosen square. 66% chance to evade attack.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Evade an incoming attack by diving to an adjacent coordinate."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Defend",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "1",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Weapon-Tied"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Defense",
+      "range_units": "Melee",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Block [Weapon Rating] damage. Shields get +Rating. Can spend additional stamina (1:1) to negate excess damage.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "Guard Break if remaining damage exceeds or equals remaining stamina."
+    },
+    "flavor_and_lore": {
+      "description": "Brace for impact utilizing your current weapon or shield."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Breathe",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "0",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Breathing",
+      "range_units": "Self",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Restore Stamina based on current exhaustion tier.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": "Cannot perform any other actions during the turn.",
+      "reaction_vulnerability": "Vulnerable to free hits."
+    },
+    "flavor_and_lore": {
+      "description": "Gather the breath of life to recover internal energy."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Touch",
+      "theme_archetype": "Basic Action",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "1",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "One-Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Touch",
+      "range_units": "Touch",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "A 0-damage melee technique used to activate techniques or Marks requiring touch.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "Fails if the opponent dodges or hits you with an attack first."
+    },
+    "flavor_and_lore": {
+      "description": "Reach out to interact directly with an entity."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Parry",
+      "theme_archetype": "generic",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "2",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Any Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": "Standstill"
+    },
+    "technical_execution": {
+      "action_type": "Defense",
+      "range_units": "Melee",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Cancel incoming attack and its effects. If melee, you may attack attacking creature as if it didn't attack. If ranged, you may redirect it at any direction.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "Has to be done with a weapon. High Risk: if failed, leaves you Guard Broken."
+    },
+    "flavor_and_lore": {
+      "description": "Deflect the opponent's momentum back against them."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Mimic Traits",
+      "theme_archetype": "Alchemist",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "4",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "2 Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Abstract",
+      "range_units": "Sight",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Copy weapon, it has no weapon rating",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Transmute local matter to mimic a seen weapon."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Enticing command",
+      "theme_archetype": "Attraction",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "X",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Touch",
+      "range_units": "Touch",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Tell creature to use a technique. If the creature uses that technique, You and the creature get temporary health equal to the stamina cost of that technique.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "I use my soft touch to try to convince you to do my will."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Light Arm",
+      "theme_archetype": "Breathing and Focus",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "3",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Projection",
+      "range_units": "Self",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "You get one extra arm.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Use solid stamina to make an arm on one side."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Hold Breath",
+      "theme_archetype": "Breathing and Focus",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "Free",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": "Damageless"
+    },
+    "technical_execution": {
+      "action_type": "Breathing",
+      "range_units": "Self",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "You do not gain stamina, but also don't lose it to overstamina.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Keep the internal energy stagnant."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Dash",
+      "theme_archetype": "Breathing and Focus",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "3",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Movement",
+      "range_units": "1",
+      "range_type": "Straight"
+    },
+    "effects_and_logic": {
+      "active_effect": "Move quickly by 1 unit in a straight line.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "A rapid burst of focused movement."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Deep Focus",
+      "theme_archetype": "Breathing and Focus",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "Free",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "2 Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": "Concentrated"
+    },
+    "technical_execution": {
+      "action_type": "Abstract",
+      "range_units": "Self",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Gain 5 stamina.",
+      "passive_effect": "For every consecutive turn using deep focus add 1 to the amount of stamina gained per turn: 5, 6, 7, 8, 9...",
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Center your mind entirely to pull maximum energy from your surroundings."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Starlight Flash",
+      "theme_archetype": "Cosmic",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "2",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "One Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Projection",
+      "range_units": "Melee",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Flash of cosmic light.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Blinding light emitted from the palm."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Plasma Bolt",
+      "theme_archetype": "Electric",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "4",
+      "cost_type": "Once",
+      "charge_time": "1"
+    },
+    "handing_and_equipment": {
+      "handing": "One Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Projection",
+      "range_units": "3",
+      "range_type": "Straight"
+    },
+    "effects_and_logic": {
+      "active_effect": "Fire a bolt of raw plasma.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "A charged shot of electrical super-heating."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Hydr Blast",
+      "theme_archetype": "Electrolysis",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "5",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Any Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Projection",
+      "range_units": "Melee",
+      "range_type": "Cone"
+    },
+    "effects_and_logic": {
+      "active_effect": "A cone of electrolytic force.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Violent release of rapidly separated atomic pressure."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Mudclone",
+      "theme_archetype": "Mud",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "5",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Projection",
+      "range_units": "Around",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Create a clone of yourself. Actions it perform are paid with your stamina. You control it. It has no weapon. It has 4 health.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "Requires 2 Handed activation."
+    },
+    "flavor_and_lore": {
+      "description": "Sculpt the earth into a fighting double."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Submission Hold",
+      "theme_archetype": "Silver Shackels",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "4",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "2 Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Attack",
+      "range_units": "3",
+      "range_type": "Cone"
+    },
+    "effects_and_logic": {
+      "active_effect": "Hold creature's hands with silver chains. The creature is incapable of moving its hands.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "Send your silver chains over the ground; it holds around the creature's hands."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Crimson Immitation",
+      "theme_archetype": "Specialist",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "X",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Unhanded"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Quick",
+      "range_units": "Sight",
+      "range_type": null
+    },
+    "effects_and_logic": {
+      "active_effect": "Copy a technique being used by another creature.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "You can only use the technique while it is being used by another creature."
+    },
+    "flavor_and_lore": {
+      "description": "A rapid ocular translation of enemy movements."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Grab",
+      "theme_archetype": "Unarmed",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "X",
+      "cost_type": "Sustained",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "Any Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Defense",
+      "range_units": "Melee",
+      "range_type": "Straight"
+    },
+    "effects_and_logic": {
+      "active_effect": "Grab a creature within Unarmed range. You and the creature can't move. You can let go whenever you want.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": "At the end of every turn holding a creature, you and the creature secretly pay any amount of stamina. IF the creature pays 2 more than the amount you payed, they break free."
+    },
+    "flavor_and_lore": {
+      "description": "A close-quarters grapple designed to halt momentum."
+    }
+  },
+  {
+    "header_information": {
+      "name": "Kamehameha",
+      "theme_archetype": "Plasmatic / Generic",
+      "age_mot": null
+    },
+    "resource_costs": {
+      "stamina_cost": "2:X",
+      "cost_type": "Once",
+      "charge_time": null
+    },
+    "handing_and_equipment": {
+      "handing": "2 Handed"
+    },
+    "deep_requirements": {
+      "archetype_depth": null,
+      "health_threshold": null,
+      "mark_mutation_check": null,
+      "state_condition": null
+    },
+    "technical_execution": {
+      "action_type": "Attack",
+      "range_units": "5",
+      "range_type": "Straight"
+    },
+    "effects_and_logic": {
+      "active_effect": "Massive plasma beam dealing high damage across multiple spaces.",
+      "passive_effect": null,
+      "status_keyword": null
+    },
+    "side_effects_and_drawbacks": {
+      "action_lockout": null,
+      "reaction_vulnerability": null
+    },
+    "flavor_and_lore": {
+      "description": "I cup my hands, drawing immense amounts of my breath of life from within. I focus this concentrated stamina, unleashing it as a powerful, devastating beam of energy that I fire straight at you."
+    }
+  }
+]

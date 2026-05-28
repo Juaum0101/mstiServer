@@ -1,0 +1,75 @@
+<div class="max-w-[800px] mx-auto mt-12 p-8 blueprint-card bg-surface-container-low" *ngIf="localPlayer$ | async as localPlayer; else noPlayer">
+  
+  <div class="flex items-center justify-between mb-8 border-b border-outline-variant pb-4">
+    <h2 class="font-headline-lg text-primary flex items-center gap-3">
+      <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">backpack</span>
+      Vessel Loadout
+    </h2>
+    <div class="font-label-sm text-outline uppercase">
+      Vessel: <span class="text-on-surface">{{ localPlayer.playerName }}</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="space-y-6 bg-surface-container/50 p-6 border border-outline/30 rounded">
+      <h3 class="font-title-md text-secondary border-b border-outline/20 pb-2">Armor</h3>
+      
+      <div>
+        <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Head</label>
+        <select [(ngModel)]="head" class="input-field font-body-md w-full">
+          <option *ngFor="let item of availableHeads" [value]="item">{{ item }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Torso</label>
+        <select [(ngModel)]="torso" class="input-field font-body-md w-full">
+          <option *ngFor="let item of availableTorsos" [value]="item">{{ item }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="space-y-6 bg-surface-container/50 p-6 border border-outline/30 rounded relative">
+      <h3 class="font-title-md text-primary border-b border-outline/20 pb-2">Arms</h3>
+      
+      <div>
+        <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Left Hand</label>
+        <select [(ngModel)]="leftHand" class="input-field font-body-md w-full">
+          <option *ngFor="let item of availableWeapons" [value]="item">{{ item }}</option>
+        </select>
+      </div>
+
+      <div class="flex justify-center -my-2 relative z-10">
+        <button (click)="swapHands()" class="bg-surface-variant border border-outline-variant rounded-full p-2 hover:bg-primary/20 hover:text-primary transition-colors text-outline">
+          <span class="material-symbols-outlined">swap_vert</span>
+        </button>
+      </div>
+
+      <div>
+        <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Right Hand</label>
+        <select [(ngModel)]="rightHand" class="input-field font-body-md w-full">
+          <option *ngFor="let item of availableWeapons" [value]="item">{{ item }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-4">
+    <button (click)="syncFromState(localPlayer)" class="gold-btn flex-1 bg-surface-container-highest text-on-surface font-title-md py-4 border border-outline hover:bg-surface-bright transition-colors flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined">sync</span>
+      Sync Current
+    </button>
+    <button (click)="applyChanges()" class="gold-btn flex-[2] bg-primary text-on-primary font-title-md py-4 border border-primary-container hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+      Apply Changes
+    </button>
+  </div>
+</div>
+
+<ng-template #noPlayer>
+  <div class="max-w-[600px] mx-auto mt-20 p-8 blueprint-card bg-surface-container-low text-center">
+    <span class="material-symbols-outlined text-6xl text-outline mb-4">hourglass_empty</span>
+    <h2 class="font-headline-lg text-on-surface-variant">NO VESSEL DETECTED</h2>
+    <p class="font-body-md text-outline mt-2">You must initialize your vessel in the Lobby before modifying your loadout.</p>
+  </div>
+</ng-template>

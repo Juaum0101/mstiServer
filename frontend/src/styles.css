@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Colors */
+  --surface: #131313;
+  --surface-dim: #131313;
+  --surface-bright: #393939;
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1c1b1b;
+  --surface-container: #20201f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353535;
+  --on-surface: #e5e2e1;
+  --on-surface-variant: #d0c5af;
+  --inverse-surface: #e5e2e1;
+  --inverse-on-surface: #313030;
+  
+  --outline: #99907c;
+  --outline-variant: #4d4635;
+  
+  --surface-tint: #e9c349;
+  --primary: #f2ca50; /* Esoteric Gold */
+  --on-primary: #3c2f00;
+  --primary-container: #d4af37;
+  --on-primary-container: #554300;
+  
+  --secondary: #ffb4a8; /* Deep Crimson */
+  --on-secondary: #690000;
+  --secondary-container: #920703;
+  --on-secondary-container: #ff9a8a;
+  
+  --tertiary: #c0d78f; /* Mossy Green */
+  --on-tertiary: #253600;
+  --tertiary-container: #a5bb76;
+  --on-tertiary-container: #394b13;
+  
+  --error: #ffb4ab;
+  --on-error: #690005;
+  
+  --background: #121212;
+  --on-background: #e5e2e1;
+
+  /* Typography */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: var(--font-body);
+  /* The Blueprint Grid */
+  background-image: 
+    linear-gradient(rgba(192, 192, 192, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(192, 192, 192, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center top;
+  min-height: 100vh;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.mono-text {
+  font-family: var(--font-mono);
+}
+
+/* Component Styles */
+.card-panel {
+  background-color: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  padding: 16px;
+  position: relative;
+}
+
+/* "Inner Glow" effect for elevation */
+.card-panel::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.btn-gold {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 12px 24px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  /* 45 degree clip path */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+.btn-gold:hover {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-gold:disabled {
+  background-color: var(--surface-container-high);
+  color: var(--outline);
+  border-color: var(--outline-variant);
+  cursor: not-allowed;
+}
+
+.input-field {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--outline);
+  color: var(--on-surface);
+  font-family: var(--font-mono);
+  padding: 8px 0;
+  font-size: 16px;
+  width: 100%;
+}
+
+.input-field:focus {
+  outline: none;
+  border-bottom-color: var(--primary);
+}
+
+.input-field::placeholder {
+  color: var(--outline-variant);
+}
+
+.rhombus-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.health-bar {
+  background-color: rgba(146, 7, 3, 0.1);
+  height: 8px;
+  width: 100%;
+  border: 1px solid var(--outline-variant);
+}
+
+.health-fill {
+  background-color: var(--secondary-container);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.stamina-bar {
+  background-color: rgba(57, 75, 19, 0.1);
+  height: 8px;
+  width: 100%;
+  border: 1px solid var(--outline-variant);
+}
+
+.stamina-fill {
+  background-color: var(--tertiary-container);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Select Dropdown Reset */
+select.input-field {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+select.input-field option {
+  background-color: var(--surface-container);
+  color: var(--on-surface);
+}
+
+/* Rhombus Icon class */
+.rhombus-icon {
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary);
+  transform: rotate(45deg);
+  display: inline-block;
+}
+
+/* Monolith UI Blueprint additions */
+.blueprint-card {
+    border: 1px solid theme('colors.outline-variant');
+    position: relative;
+}
+
+.blueprint-card::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    background: theme('colors.primary');
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.toggle-checkbox:checked {
+    background-color: theme('colors.primary');
+    border-color: theme('colors.primary');
+}
+
+.toggle-checkbox:checked+.toggle-label {
+    background-color: theme('colors.primary-container');
+    transform: translateX(100%);
+}
+
+.gold-btn {
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    background: theme('colors.primary');
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    cursor: pointer;
+    margin-top: -6px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: theme('colors.outline-variant');
+}
