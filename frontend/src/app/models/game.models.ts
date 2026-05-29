@@ -1,4 +1,4 @@
-export type PhaseId = 'READY_PHASE' | 'MEMORY_CYCLE' | 'MOVEMENT_PHASE' | 'ACTION_PHASE' | 'REVEAL_PHASE' | 'RESOLUTION_PHASE';
+export type PhaseId = 'READY_PHASE' | 'MOVEMENT_CHOICE' | 'MOVEMENT_RESOLVE' | 'ACTION_CHOICE' | 'ACTION_RESOLVE';
 
 export enum ActionIntentType {
   ATTACK_LIGHT = 'ATTACK_LIGHT',
@@ -45,7 +45,7 @@ export interface Player {
   hp: number;
   maxHp: number;
   stamina: number;
-  staminaInflux: number;
+  staminaInflux?: number;
   position: [number, number];
   targetPosition: [number, number];
   facingDirection: string;
@@ -55,11 +55,18 @@ export interface Player {
   nextHitCritical: boolean;
   mutations: Mutations;
   equippedItems: EquippedItems;
-  activeMemory: string[];
+  activeMemory?: string[];
+  currentIntent?: ActionIntent;
   isReady: boolean;
+}
+
+export interface TurnStatus {
+  name: string;
+  status: string;
 }
 
 export interface FullStatePayload {
   gameState: GameState;
   players: Player[];
+  turnStatuses: TurnStatus[];
 }

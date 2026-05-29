@@ -3,8 +3,9 @@
 
 class GameEngine {
 public:
-    // Main orchestrator for resolving the turn
-    static void executeTurn(FullStatePayload& state);
+    // Main orchestrators for resolving the sub-phases
+    static void executeMovementPhase(FullStatePayload& state);
+    static void executeActionPhase(FullStatePayload& state);
 
     // Helpers
     static void initializePlayer(Player& p);

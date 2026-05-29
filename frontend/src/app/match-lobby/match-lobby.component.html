@@ -1,4 +1,4 @@
-<div class="max-w-[1200px] mx-auto p-8" *ngIf="state$ | async as state">
+<div class="max-w-[1200px] mx-auto p-8">
   
   <!-- BUILD SELECTION STEP -->
   <ng-container *ngIf="!hasJoined">
@@ -84,7 +84,7 @@
   </ng-container>
 
   <!-- LOBBY ROSTER STEP -->
-  <ng-container *ngIf="hasJoined">
+  <ng-container *ngIf="hasJoined && (state$ | async) as state">
     <div class="blueprint-card bg-surface-container-low p-8 max-w-[800px] mx-auto">
       <div class="flex items-center justify-between mb-6 border-b border-outline/30 pb-4">
         <h3 class="font-title-md text-primary flex items-center gap-2">

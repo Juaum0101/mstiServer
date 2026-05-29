@@ -19,12 +19,24 @@ export class GameStateService {
   public isInputLocked$: Observable<boolean> = this.state$.pipe(
     map(state => {
       if (!state) return true;
-      // Inputs are only unlocked during ACTION_PHASE.
-      return state.gameState.phaseId !== 'ACTION_PHASE';
+      // Inputs are only unlocked during CHOICE phases.
+      return state.gameState.phaseId !== 'ACTION_CHOICE' && state.gameState.phaseId !== 'MOVEMENT_CHOICE';
     })
   );
 
   constructor(private ngZone: NgZone) {
+    // Check localStorage for player identity
+    const storedId = localStorage.getItem('msk_player_id');
+    const storedName = localStorage.getItem('msk_player_name');
+    
+    if (storedId) {
+      this.localPlayerId = storedId;
+      this.localPlayerName = storedName || '';
+    } else {
+      this.localPlayerId = 'P' + Math.floor(Math.random() * 10000);
+      localStorage.setItem('msk_player_id', this.localPlayerId);
+    }
+
     // Dynamically resolve host so this works both on the ESP32 SoftAP
     // (192.168.4.1) and during local development (localhost). 
     let host = window.location.hostname;
@@ -42,12 +54,13 @@ export class GameStateService {
 
     this.client.on('connect', () => {
       console.log('Connected to MQTT broker via WebSockets');
-      this.client.subscribe('game/state', (err) => {
+      const stateTopic = `game/state/${this.localPlayerId}`;
+      this.client.subscribe(stateTopic, (err) => {
         if (err) {
-          console.error('Failed to subscribe to game/state', err);
+          console.error(`Failed to subscribe to ${stateTopic}`, err);
         } else {
           // Request the current state so the UI isn't stuck waiting
-          console.log('Subscribed to game/state');
+          console.log(`Subscribed to ${stateTopic}`);
           this.client.publish('game/sync', '{"action": "sync"}');
           console.log('Synched game state');
         }
@@ -56,7 +69,7 @@ export class GameStateService {
 
     this.client.on('message', (topic, message) => {
       console.log('Received message on topic', topic);
-      if (topic === 'game/state') {
+      if (topic === `game/state/${this.localPlayerId}`) {
         try {
           const payload = JSON.parse(message.toString()) as FullStatePayload;
           this.ngZone.run(() => {
@@ -87,6 +100,8 @@ export class GameStateService {
   public joinGame(payload: any): void {
     if (this.client.connected) {
       console.log('Joining game', payload);
+      this.localPlayerName = payload.playerName;
+      localStorage.setItem('msk_player_name', this.localPlayerName);
       this.client.publish('game/join', JSON.stringify(payload));
       console.log('Game joined');
     }

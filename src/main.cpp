@@ -2,6 +2,7 @@
 #include <ArduinoJson.h>
 #include <DNSServer.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPmDNS.h>
 #include <LittleFS.h>
 #include <PicoMQTT.h>
 #include <WiFi.h>
@@ -29,12 +30,21 @@ PicoMQTT::Server mqtt(wsMqtt);
 
 JsonDocument globalDoc;
 FullStatePayload state;
+int nextSpawnIndex = 0;
+
+const int SPAWN_POINTS[4][2] = {
+  {4, 3}, // closest to center
+  {6, 4}, // mid right
+  {2, 6}, // mid left
+  {0, 4}  // far left edge
+};
 
 void initState() {
   state.gameState.phaseId = PhaseId::READY_PHASE; // LOBBY
   state.gameState.turnNumber = 0;
   state.gameState.brokerReady = true;
   state.playerCount = 0;
+  nextSpawnIndex = 0;
 
   for (size_t i = 0; i < MAX_PLAYERS; i++) {
     state.players[i].active = false;
@@ -50,72 +60,111 @@ void initState() {
 }
 
 void serializeAndPublishState() {
-  globalDoc.clear();
+  for (size_t targetIdx = 0; targetIdx < state.playerCount; targetIdx++) {
+    Player &targetPlayer = state.players[targetIdx];
+    if (!targetPlayer.active) continue;
 
-  JsonObject gs = globalDoc["gameState"].to<JsonObject>();
-  gs["phaseId"] = phaseIdToString(state.gameState.phaseId);
-  gs["turnNumber"] = state.gameState.turnNumber;
-  gs["brokerReady"] = state.gameState.brokerReady;
+    globalDoc.clear();
 
-  JsonObject gc = gs["config"].to<JsonObject>();
-  gc["mutationsAllowed"] = state.gameState.config.mutationsAllowed;
-  gc["marksActive"] = state.gameState.config.marksActive;
-  gc["techniquesEnabled"] = state.gameState.config.techniquesEnabled;
-  gc["classVisibility"] = state.gameState.config.classVisibility;
-  gc["namesVisible"] = state.gameState.config.namesVisible;
-  gc["newbieMode"] = state.gameState.config.newbieMode;
-  gc["fogRange"] = state.gameState.config.fogRange;
-  gc["perTurnLimit"] = state.gameState.config.perTurnLimit;
-  gc["matchTimer"] = state.gameState.config.matchTimer;
+    JsonObject gs = globalDoc["gameState"].to<JsonObject>();
+    gs["phaseId"] = phaseIdToString(state.gameState.phaseId);
+    gs["turnNumber"] = state.gameState.turnNumber;
+    gs["brokerReady"] = state.gameState.brokerReady;
 
-  JsonArray playersArr = globalDoc["players"].to<JsonArray>();
-  for (size_t i = 0; i < state.playerCount; i++) {
-    Player &p = state.players[i];
-    if (!p.active)
-      continue;
+    JsonObject gc = gs["config"].to<JsonObject>();
+    gc["mutationsAllowed"] = state.gameState.config.mutationsAllowed;
+    gc["marksActive"] = state.gameState.config.marksActive;
+    gc["techniquesEnabled"] = state.gameState.config.techniquesEnabled;
+    gc["classVisibility"] = state.gameState.config.classVisibility;
+    gc["namesVisible"] = state.gameState.config.namesVisible;
+    gc["newbieMode"] = state.gameState.config.newbieMode;
+    gc["fogRange"] = state.gameState.config.fogRange;
+    gc["perTurnLimit"] = state.gameState.config.perTurnLimit;
+    gc["matchTimer"] = state.gameState.config.matchTimer;
 
-    JsonObject po = playersArr.add<JsonObject>();
-    po["playerId"] = p.playerId;
-    po["playerName"] = p.playerName;
-    po["hp"] = p.hp;
-    po["maxHp"] = p.maxHp;
-    po["stamina"] = p.stamina;
-    po["staminaInflux"] = p.staminaInflux;
-
-    JsonArray pos = po["position"].to<JsonArray>();
-    pos.add(p.position[0]);
-    pos.add(p.position[1]);
-
-    JsonArray tpos = po["targetPosition"].to<JsonArray>();
-    tpos.add(p.targetPosition[0]);
-    tpos.add(p.targetPosition[1]);
-
-    po["facingDirection"] = p.facingDirection;
-    po["isTwoHanding"] = p.isTwoHanding;
-    po["isExhausted"] = p.isExhausted;
-    po["isFallen"] = p.isFallen;
-    po["nextHitCritical"] = p.nextHitCritical;
-    po["isReady"] = p.isReady;
-
-    JsonObject eq = po["equippedItems"].to<JsonObject>();
-    eq["head"] = p.equippedItems.head;
-    eq["torso"] = p.equippedItems.torso;
-    eq["leftHand"] = p.equippedItems.leftHand;
-    eq["rightHand"] = p.equippedItems.rightHand;
-
-    JsonArray mem = po["activeMemory"].to<JsonArray>();
-    for (size_t j = 0; j < p.activeMemoryCount; j++) {
-      mem.add(p.activeMemory[j]);
+    JsonArray turnStatuses = globalDoc["turnStatuses"].to<JsonArray>();
+    for (size_t i = 0; i < state.playerCount; i++) {
+      if (!state.players[i].active) continue;
+      JsonObject ts = turnStatuses.add<JsonObject>();
+      ts["name"] = state.players[i].playerName;
+      if (state.players[i].isFallen) ts["status"] = "Fallen";
+      else if (state.players[i].isReady) ts["status"] = "Ready";
+      else ts["status"] = "Choosing";
     }
+
+    JsonArray playersArr = globalDoc["players"].to<JsonArray>();
+    for (size_t i = 0; i < state.playerCount; i++) {
+      Player &p = state.players[i];
+      if (!p.active) continue;
+
+      bool isSelf = (p.playerId == targetPlayer.playerId);
+
+      // Fog of War: check visual range
+      if (!isSelf && state.gameState.phaseId != PhaseId::READY_PHASE) {
+        int dist = chebyshevDistance(p.position[0], p.position[1], targetPlayer.position[0], targetPlayer.position[1]);
+        if (dist > state.gameState.config.fogRange) {
+          continue; // Omit entirely
+        }
+      }
+
+      JsonObject po = playersArr.add<JsonObject>();
+      po["playerId"] = p.playerId;
+      po["playerName"] = p.playerName;
+      po["hp"] = p.hp;
+      po["maxHp"] = p.maxHp;
+
+      if (isSelf) {
+        po["stamina"] = p.stamina;
+        po["staminaInflux"] = p.staminaInflux;
+
+        JsonArray mem = po["activeMemory"].to<JsonArray>();
+        for (size_t j = 0; j < p.activeMemoryCount; j++) {
+          mem.add(p.activeMemory[j]);
+        }
+
+        JsonObject intentObj = po["currentIntent"].to<JsonObject>();
+        intentObj["type"] = intentTypeToString(p.currentIntent.type);
+        intentObj["targetX"] = p.currentIntent.targetX;
+        intentObj["targetY"] = p.currentIntent.targetY;
+        intentObj["targetDirection"] = p.currentIntent.targetDirection;
+        intentObj["staminaInflux"] = p.currentIntent.staminaInflux;
+      } else {
+        // Opponent Data (Masking): NEVER broadcast Stamina, Max Stamina, or staminaInflux.
+        // Action Resolution: only broadcast Action Name (type).
+        if (state.gameState.phaseId == PhaseId::ACTION_RESOLVE || state.gameState.phaseId == PhaseId::MOVEMENT_RESOLVE) {
+          JsonObject intentObj = po["currentIntent"].to<JsonObject>();
+          intentObj["type"] = intentTypeToString(p.currentIntent.type);
+        }
+      }
+
+      JsonArray pos = po["position"].to<JsonArray>();
+      pos.add(p.position[0]);
+      pos.add(p.position[1]);
+
+      JsonArray tpos = po["targetPosition"].to<JsonArray>();
+      tpos.add(p.targetPosition[0]);
+      tpos.add(p.targetPosition[1]);
+
+      po["facingDirection"] = p.facingDirection;
+      po["isTwoHanding"] = p.isTwoHanding;
+      po["isExhausted"] = p.isExhausted;
+      po["isFallen"] = p.isFallen;
+      po["nextHitCritical"] = p.nextHitCritical;
+      po["isReady"] = p.isReady;
+
+      JsonObject eq = po["equippedItems"].to<JsonObject>();
+      eq["head"] = p.equippedItems.head;
+      eq["torso"] = p.equippedItems.torso;
+      eq["leftHand"] = p.equippedItems.leftHand;
+      eq["rightHand"] = p.equippedItems.rightHand;
+    }
+
+    String payload;
+    serializeJson(globalDoc, payload);
+
+    String topic = "game/state/" + targetPlayer.playerId;
+    mqtt.publish(topic.c_str(), payload.c_str(), 0, true); // QoS 0, retain true
   }
-
-  String payload;
-  serializeJson(globalDoc, payload);
-
-  Serial.print("Publishing state: ");
-  Serial.println(payload);
-  mqtt.publish("game/state", payload.c_str(), 0, true); // QoS 0, retain true
-  Serial.println("State published");
 }
 
 // resolveTurn is now handled by GameEngine::executeTurn
@@ -151,11 +200,19 @@ void setup() {
     delay(500); // Acceptable only in setup() before the main loop starts.
     Serial.print('.');
   }
-  Serial.println();
-
+  Serial.println("");
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("[DEV] STA IP  : ");
-    Serial.println(WiFi.localIP()); // <-- Copy this IP for desktop testing
+    Serial.println("WiFi connected");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+
+    if (!MDNS.begin("treasureisland")) {
+      Serial.println("Error setting up MDNS responder!");
+    } else {
+      Serial.println("mDNS responder started at treasureisland.local");
+      MDNS.addService("http", "tcp", 80);
+      MDNS.addService("ws", "tcp", 8080);
+    }
   } else {
     Serial.println("[WARN] STA connection timed out. Running AP-only.");
   }
@@ -311,6 +368,11 @@ void setup() {
     for (size_t i = 0; i < state.playerCount; i++) {
       if (state.players[i].active && state.players[i].playerId == playerId) {
         state.players[i].isReady = ready;
+        if (ready && state.players[i].position[0] == -1 && nextSpawnIndex < 4) {
+           state.players[i].position[0] = SPAWN_POINTS[nextSpawnIndex][0];
+           state.players[i].position[1] = SPAWN_POINTS[nextSpawnIndex][1];
+           nextSpawnIndex++;
+        }
         Serial.printf("Player %s is %s.\n", state.players[i].playerName.c_str(), ready ? "ready" : "not ready");
         serializeAndPublishState();
         break;
@@ -327,22 +389,22 @@ void setup() {
     String command = globalDoc["command"] | "";
     if (command == "START_MATCH" &&
         state.gameState.phaseId == PhaseId::READY_PHASE) {
-      state.gameState.phaseId = PhaseId::ACTION_PHASE;
+      state.gameState.phaseId = PhaseId::MOVEMENT_CHOICE;
       state.gameState.turnNumber = 1;
 
-      // Assign starting grid positions based on active players
-      int startCoords[4][2] = {{4, 8}, {4, 0}, {0, 4}, {8, 4}};
-      String startFacing[4] = {"N", "S", "E", "W"};
-
-      int spawnIdx = 0;
       for (size_t i = 0; i < MAX_PLAYERS; i++) {
         if (state.players[i].active) {
-          state.players[i].position[0] = startCoords[spawnIdx][0];
-          state.players[i].position[1] = startCoords[spawnIdx][1];
-          state.players[i].targetPosition[0] = startCoords[spawnIdx][0];
-          state.players[i].targetPosition[1] = startCoords[spawnIdx][1];
-          state.players[i].facingDirection = startFacing[spawnIdx];
-          spawnIdx++;
+          state.players[i].isReady = false;
+          // Set target position equal to their assigned spawn position
+          if (state.players[i].position[0] == -1) {
+             state.players[i].position[0] = SPAWN_POINTS[nextSpawnIndex][0];
+             state.players[i].position[1] = SPAWN_POINTS[nextSpawnIndex][1];
+             if (nextSpawnIndex < 3) nextSpawnIndex++;
+          }
+          state.players[i].targetPosition[0] = state.players[i].position[0];
+          state.players[i].targetPosition[1] = state.players[i].position[1];
+          // Default facing
+          state.players[i].facingDirection = "N";
         }
       }
       Serial.println("Match Started!");

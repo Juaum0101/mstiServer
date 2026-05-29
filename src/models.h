@@ -9,27 +9,24 @@ constexpr size_t MAX_ACTIVE_MEMORY = 7;
 
 enum class PhaseId {
   READY_PHASE,
-  MEMORY_CYCLE,
-  MOVEMENT_PHASE,
-  ACTION_PHASE,
-  REVEAL_PHASE,
-  RESOLUTION_PHASE
+  MOVEMENT_CHOICE,
+  MOVEMENT_RESOLVE,
+  ACTION_CHOICE,
+  ACTION_RESOLVE
 };
 
 inline const char *phaseIdToString(PhaseId phase) {
   switch (phase) {
   case PhaseId::READY_PHASE:
     return "READY_PHASE";
-  case PhaseId::MEMORY_CYCLE:
-    return "MEMORY_CYCLE";
-  case PhaseId::MOVEMENT_PHASE:
-    return "MOVEMENT_PHASE";
-  case PhaseId::ACTION_PHASE:
-    return "ACTION_PHASE";
-  case PhaseId::REVEAL_PHASE:
-    return "REVEAL_PHASE";
-  case PhaseId::RESOLUTION_PHASE:
-    return "RESOLUTION_PHASE";
+  case PhaseId::MOVEMENT_CHOICE:
+    return "MOVEMENT_CHOICE";
+  case PhaseId::MOVEMENT_RESOLVE:
+    return "MOVEMENT_RESOLVE";
+  case PhaseId::ACTION_CHOICE:
+    return "ACTION_CHOICE";
+  case PhaseId::ACTION_RESOLVE:
+    return "ACTION_RESOLVE";
   default:
     return "UNKNOWN_PHASE";
   }

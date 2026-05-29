@@ -78,9 +78,30 @@
             <div class="w-full bg-error-container/20 h-1 mb-2">
                 <div class="bg-error h-full" [style.width.%]="(hoveredPlayer.hp / hoveredPlayer.maxHp) * 100"></div>
             </div>
-            <div class="font-label-sm text-outline flex justify-between">
-                <span>HP: {{hoveredPlayer.hp}}/{{hoveredPlayer.maxHp}}</span>
-                <span>STM: {{hoveredPlayer.stamina}}/10</span>
+            <div class="font-label-sm text-outline flex flex-col gap-1">
+                <div class="flex justify-between">
+                    <span>HP: {{hoveredPlayer.hp}}/{{hoveredPlayer.maxHp}}</span>
+                    <span>STM: {{hoveredPlayer.stamina}}/10</span>
+                </div>
+                <!-- Masked Fog of War Data -->
+                <div class="flex justify-between border-t border-outline/20 mt-1 pt-1">
+                    <span class="text-secondary">Intent:</span>
+                    <span class="text-on-surface font-mono" *ngIf="hoveredPlayer.currentIntent">
+                        {{ hoveredPlayer.currentIntent.type }}
+                    </span>
+                    <span class="text-tertiary flex items-center gap-1 font-mono" *ngIf="!hoveredPlayer.currentIntent">
+                        <span class="material-symbols-outlined text-[10px]">lock</span> Locked
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-secondary">Recovery:</span>
+                    <span class="text-on-surface font-mono" *ngIf="hoveredPlayer.staminaInflux !== undefined">
+                        +{{ hoveredPlayer.staminaInflux }}
+                    </span>
+                    <span class="text-tertiary flex items-center gap-1 font-mono" *ngIf="hoveredPlayer.staminaInflux === undefined">
+                        <span class="material-symbols-outlined text-[10px]">visibility_off</span> Hidden
+                    </span>
+                </div>
             </div>
         </div>
     </div>

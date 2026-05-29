@@ -17,8 +17,20 @@ export class MatchLobbyComponent {
 
   // Build State
   hasJoined = false;
-  playerName = '';
-  playerId = 'P' + Math.floor(Math.random() * 1000); // Random ID for testing
+  playerName = this.gameStateService.localPlayerName;
+  playerId = this.gameStateService.localPlayerId;
+
+  ngOnInit() {
+    this.state$.subscribe(state => {
+      if (state && !this.hasJoined) {
+        const me = state.players.find(p => p.playerId === this.playerId && p.active);
+        if (me) {
+          this.hasJoined = true;
+          this.playerName = me.playerName;
+        }
+      }
+    });
+  }
 
   head = 'None';
   torso = 'None';

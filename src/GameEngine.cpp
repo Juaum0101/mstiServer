@@ -261,19 +261,28 @@ void GameEngine::checkWinCondition(FullStatePayload &state) {
   }
 }
 
-void GameEngine::executeTurn(FullStatePayload &state) {
-  Serial.println("[GameEngine] Resolving Movement...");
+void GameEngine::executeMovementPhase(FullStatePayload &state) {
+  Serial.println("[GameEngine] Resolving Movement Phase...");
+  state.gameState.phaseId = PhaseId::MOVEMENT_RESOLVE;
   resolveMovement(state);
 
-  Serial.println("[GameEngine] Resolving Combat & Vitals...");
-  resolveCombatAndVitals(state);
+  // Transition to ACTION_CHOICE
+  state.gameState.phaseId = PhaseId::ACTION_CHOICE;
+  for (size_t i = 0; i < state.playerCount; i++) {
+    state.players[i].isReady = false;
+    state.players[i].currentIntent.type = ActionIntentType::NONE;
+  }
+}
 
+void GameEngine::executeActionPhase(FullStatePayload &state) {
+  Serial.println("[GameEngine] Resolving Action Phase...");
+  state.gameState.phaseId = PhaseId::ACTION_RESOLVE;
+  resolveCombatAndVitals(state);
   checkWinCondition(state);
 
-  // Turn cleanup
+  // Turn cleanup and transition back to MOVEMENT_CHOICE
   state.gameState.turnNumber++;
-  state.gameState.phaseId = PhaseId::ACTION_PHASE;
-
+  state.gameState.phaseId = PhaseId::MOVEMENT_CHOICE;
   for (size_t i = 0; i < state.playerCount; i++) {
     state.players[i].isReady = false;
     state.players[i].currentIntent.type = ActionIntentType::NONE;
