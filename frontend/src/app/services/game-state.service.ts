@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import mqtt from 'mqtt';
 import { FullStatePayload, ActionIntent } from '../models/game.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +17,12 @@ export class GameStateService {
   public localPlayerId: string = '';
   public localPlayerName: string = '';
 
-  public isInputLocked$: Observable<boolean> = this.state$.pipe(
-    map(state => {
-      if (!state) return true;
-      // Inputs are only unlocked during CHOICE phases.
-      return state.gameState.phaseId !== 'ACTION_CHOICE' && state.gameState.phaseId !== 'MOVEMENT_CHOICE';
-    })
+  public isMovementLocked$: Observable<boolean> = this.state$.pipe(
+    map(state => !state || state.gameState.phaseId !== 'MOVEMENT_CHOICE')
+  );
+
+  public isActionLocked$: Observable<boolean> = this.state$.pipe(
+    map(state => !state || state.gameState.phaseId !== 'ACTION_CHOICE')
   );
 
   constructor(private ngZone: NgZone) {
@@ -37,13 +38,7 @@ export class GameStateService {
       localStorage.setItem('msk_player_id', this.localPlayerId);
     }
 
-    // Dynamically resolve host so this works both on the ESP32 SoftAP
-    // (192.168.4.1) and during local development (localhost). 
-    let host = window.location.hostname;
-    if (host === 'localhost') {
-      host = '192.168.0.57'; // Dev override
-    }
-    const wsUrl = `ws://${host}:8080/`;
+    const wsUrl = environment.brokerUrl;
 
     this.client = mqtt.connect(wsUrl, {
       // PicoMQTT serves at the root WebSocket path.
@@ -89,6 +84,7 @@ export class GameStateService {
 
   public dispatchAction(intent: ActionIntent): void {
     if (this.client.connected) {
+      intent.playerId = this.localPlayerId;
       console.log('Dispatching action', intent);
       this.client.publish('game/action', JSON.stringify(intent));
       console.log('Action dispatched');

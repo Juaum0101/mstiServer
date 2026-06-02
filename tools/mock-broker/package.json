@@ -1,0 +1,14 @@
+{
+  "name": "mock-broker",
+  "version": "1.0.0",
+  "description": "Mock MQTT broker for local development",
+  "main": "mock-engine.js",
+  "scripts": {
+    "start": "node mock-engine.js"
+  },
+  "dependencies": {
+    "aedes": "^0.50.0",
+    "aedes-server-factory": "^0.2.0",
+    "ws": "^8.13.0"
+  }
+}

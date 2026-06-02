@@ -1,235 +1,102 @@
-<div class="h-screen flex flex-col md:flex-row bg-background overflow-hidden" *ngIf="state$ | async as state">
+<div class="min-h-screen md:h-screen flex flex-col md:flex-row bg-background md:overflow-hidden overflow-auto" *ngIf="state$ | async as state">
 
     <!-- LEFT COLUMN: Grid & Timers -->
-    <div class="flex-1 flex flex-col relative p-4 md:p-8">
+    <div class="w-full md:flex-1 flex flex-col relative p-2 md:p-8 shrink-0">
         
         <!-- TOP BAR: Timers & Forfeit -->
-        <div class="flex justify-between items-start mb-6">
-            <div class="blueprint-card bg-surface-container-low p-3 flex items-center gap-4">
-                <div class="text-center border-r border-outline/30 pr-4">
+        <div class="flex justify-between items-start mb-4 md:mb-6">
+            <div class="blueprint-card bg-surface-container-low p-2 md:p-3 flex items-center gap-2 md:gap-4 w-full md:w-auto justify-center md:justify-start">
+                <div class="text-center border-r border-outline/30 pr-2 md:pr-4">
                     <span class="font-label-sm text-outline block mb-1">MATCH</span>
-                    <span class="font-mono text-xl text-on-surface">{{ matchMinutes }}:00</span>
+                    <span class="font-mono text-lg md:text-xl text-on-surface">{{ matchMinutes }}:00</span>
                 </div>
                 <div class="text-center pl-2">
-                    <span class="font-label-sm text-primary block mb-1">TURN</span>
-                    <span class="font-mono text-2xl" [ngClass]="turnSeconds < 10 ? 'text-error animate-pulse' : 'text-primary'">
+                    <span class="font-label-sm text-primary block mb-1">TURN {{ state.gameState.turnNumber }}</span>
+                    <span class="font-mono text-xl md:text-2xl" [ngClass]="turnSeconds < 10 ? 'text-error animate-pulse' : 'text-primary'">
                         00:{{ turnSeconds < 10 ? '0'+turnSeconds : turnSeconds }}
                     </span>
                 </div>
             </div>
             
             <!-- Hidden Forfeit -->
-            <button (click)="forfeit()" class="opacity-0 hover:opacity-20 transition-opacity w-8 h-8 flex items-center justify-center text-error cursor-pointer absolute top-4 right-4">
+            <button (click)="forfeit()" class="opacity-0 hover:opacity-20 transition-opacity w-8 h-8 flex items-center justify-center text-error cursor-pointer absolute top-2 right-2 md:top-4 md:right-4 z-10">
                 <span class="material-symbols-outlined">flag</span>
             </button>
         </div>
 
         <!-- TACTICAL GRID -->
-        <div class="flex-1 flex items-center justify-center relative min-h-[400px]">
-            <div class="relative blueprint-card bg-surface-container p-4">
-                <!-- Compass Rose -->
-                <div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-sm text-primary">NORTH</div>
-                
-                <div class="grid" style="grid-template-columns: repeat(9, minmax(32px, 48px)); grid-template-rows: repeat(9, minmax(32px, 48px)); gap: 4px;">
-                    <ng-container *ngFor="let y of gridRows">
-                        <ng-container *ngFor="let x of gridCols">
-                            <!-- Square -->
-                            <div 
-                                class="relative border transition-all duration-200 cursor-pointer flex items-center justify-center"
-                                [ngClass]="{
-                                    'border-outline-variant bg-surface-container-low hover:border-primary/50': !isSquareHighlighted(x, y),
-                                    'border-primary bg-primary/20 animate-pulse cursor-crosshair': isSquareHighlighted(x, y)
-                                }"
-                                (click)="onSquareClick(x, y)"
-                                (mouseenter)="hoveredPlayer = getPlayerAt(state, x, y)"
-                                (mouseleave)="hoveredPlayer = null"
-                            >
-                                <!-- Player Token -->
-                                <div *ngIf="getPlayerAt(state, x, y) as p" 
-                                     class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 flex items-center justify-center shadow-lg"
-                                     [ngClass]="p.playerId === (localPlayer$ | async)?.playerId ? 'bg-primary border-on-primary text-on-primary' : 'bg-error border-on-error text-on-error'"
-                                >
-                                    <span class="font-label-sm text-[10px] uppercase font-bold">{{ p.playerName | slice:0:2 }}</span>
-                                </div>
-                                
-                                <!-- Coordinate Label (subtle) -->
-                                <span class="absolute bottom-0 right-0.5 text-[8px] font-mono text-outline/30">{{x}},{{y}}</span>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </div>
-            
-            <!-- Target Overlay (When Action Selected) -->
-            <div *ngIf="targetingMode" class="absolute bottom-0 w-full text-center pointer-events-none">
-                <div class="inline-block blueprint-card bg-surface-container-high/90 px-6 py-3 border-primary backdrop-blur-sm animate-bounce">
-                    <span class="font-label-sm text-primary uppercase flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">my_location</span>
-                        Select Target Square
-                    </span>
-                    <button class="pointer-events-auto text-[10px] text-outline hover:text-error mt-1 underline" (click)="cancelTargeting()">Cancel</button>
-                </div>
-            </div>
-        </div>
+        <app-tactical-grid 
+            [state]="state"
+            [localPlayer]="(localPlayer$ | async)!"
+            [targetingMode]="targetingMode"
+            [isMovementLocked]="(isMovementLocked$ | async) ?? false"
+            [highlightedCoords]="highlightedCoords"
+            (squareClicked)="onSquareClick($event.x, $event.y)"
+            (playerHovered)="hoveredPlayer = $event"
+            (cancelTargeting)="cancelTargeting()">
+        </app-tactical-grid>
         
         <!-- Floating Hover Info -->
-        <div *ngIf="hoveredPlayer" class="absolute bottom-8 left-8 blueprint-card bg-surface-container-high p-4 min-w-[200px] pointer-events-none transition-all z-50">
-            <h4 class="font-title-md text-primary mb-1">{{ hoveredPlayer.playerName }}</h4>
-            <div class="w-full bg-error-container/20 h-1 mb-2">
-                <div class="bg-error h-full" [style.width.%]="(hoveredPlayer.hp / hoveredPlayer.maxHp) * 100"></div>
-            </div>
-            <div class="font-label-sm text-outline flex flex-col gap-1">
-                <div class="flex justify-between">
-                    <span>HP: {{hoveredPlayer.hp}}/{{hoveredPlayer.maxHp}}</span>
-                    <span>STM: {{hoveredPlayer.stamina}}/10</span>
-                </div>
-                <!-- Masked Fog of War Data -->
-                <div class="flex justify-between border-t border-outline/20 mt-1 pt-1">
-                    <span class="text-secondary">Intent:</span>
-                    <span class="text-on-surface font-mono" *ngIf="hoveredPlayer.currentIntent">
-                        {{ hoveredPlayer.currentIntent.type }}
-                    </span>
-                    <span class="text-tertiary flex items-center gap-1 font-mono" *ngIf="!hoveredPlayer.currentIntent">
-                        <span class="material-symbols-outlined text-[10px]">lock</span> Locked
-                    </span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-secondary">Recovery:</span>
-                    <span class="text-on-surface font-mono" *ngIf="hoveredPlayer.staminaInflux !== undefined">
-                        +{{ hoveredPlayer.staminaInflux }}
-                    </span>
-                    <span class="text-tertiary flex items-center gap-1 font-mono" *ngIf="hoveredPlayer.staminaInflux === undefined">
-                        <span class="material-symbols-outlined text-[10px]">visibility_off</span> Hidden
-                    </span>
-                </div>
-            </div>
-        </div>
+        @if (hoveredPlayer) {
+          <div class="absolute bottom-8 left-8 blueprint-card bg-surface-container-high p-4 min-w-[200px] pointer-events-none transition-all z-50">
+              <h4 class="font-title-md text-primary mb-1">{{ hoveredPlayer.playerName }}</h4>
+              <div class="w-full bg-error-container/20 h-1 mb-2">
+                  <div class="bg-error h-full" [style.width.%]="(hoveredPlayer.hp / hoveredPlayer.maxHp) * 100"></div>
+              </div>
+              <div class="font-label-sm text-outline flex flex-col gap-1">
+                  <div class="flex justify-between">
+                      <span>HP: {{hoveredPlayer.hp}}/{{hoveredPlayer.maxHp}}</span>
+                      <span>STM: {{hoveredPlayer.stamina}}/10</span>
+                  </div>
+                  <div class="flex justify-between border-t border-outline/20 mt-1 pt-1">
+                      <span class="text-secondary">Intent:</span>
+                      @if (hoveredPlayer.currentIntent) {
+                        <span class="text-on-surface font-mono">{{ hoveredPlayer.currentIntent.type }}</span>
+                      } @else {
+                        <span class="text-tertiary flex items-center gap-1 font-mono">
+                            <span class="material-symbols-outlined text-[10px]">lock</span> Locked
+                        </span>
+                      }
+                  </div>
+                  <div class="flex justify-between">
+                      <span class="text-secondary">Recovery:</span>
+                      @if (hoveredPlayer.staminaInflux !== undefined) {
+                        <span class="text-on-surface font-mono">+{{ hoveredPlayer.staminaInflux }}</span>
+                      } @else {
+                        <span class="text-tertiary flex items-center gap-1 font-mono">
+                            <span class="material-symbols-outlined text-[10px]">visibility_off</span> Hidden
+                        </span>
+                      }
+                  </div>
+              </div>
+          </div>
+        }
+
+        <!-- TERMINAL / EVENT LOG -->
+        <app-com-link class="mt-4 block"></app-com-link>
     </div>
 
     <!-- RIGHT COLUMN: Actions & Techniques -->
     <div class="w-full md:w-80 lg:w-96 bg-surface-container border-l border-outline-variant flex flex-col h-full overflow-hidden" *ngIf="localPlayer$ | async as localPlayer">
         
         <!-- Vitals Header -->
-        <div class="p-6 border-b border-outline-variant bg-surface-container-lowest relative">
-            <div class="absolute right-0 top-0 w-16 h-16 bg-primary opacity-5 blur-xl"></div>
-            <h2 class="font-title-md text-on-surface mb-4 uppercase tracking-wider">{{ localPlayer.playerName }}</h2>
-            
-            <div class="space-y-4">
-                <!-- HP Bar -->
-                <div>
-                    <div class="flex justify-between font-label-sm mb-1">
-                        <span class="text-error">VITALITY</span>
-                        <span class="text-on-surface">{{localPlayer.hp}}/{{localPlayer.maxHp}}</span>
-                    </div>
-                    <div class="h-2 w-full bg-surface-container-highest border border-outline-variant">
-                        <div class="h-full bg-error transition-all duration-300" [style.width.%]="(localPlayer.hp / localPlayer.maxHp) * 100"></div>
-                    </div>
-                </div>
-                
-                <!-- Stamina Bar -->
-                <div>
-                    <div class="flex justify-between font-label-sm mb-1">
-                        <span class="text-tertiary">STAMINA</span>
-                        <span class="text-on-surface">{{localPlayer.stamina}}/10</span>
-                    </div>
-                    <div class="h-2 w-full bg-surface-container-highest border border-outline-variant">
-                        <div class="h-full bg-tertiary transition-all duration-300" [style.width.%]="(localPlayer.stamina / 10) * 100"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <app-player-status></app-player-status>
 
         <!-- Scrollable Action Area -->
         <div class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
             
-            <!-- Basic Actions 2x2 Grid -->
-            <div>
-                <h3 class="font-label-sm text-outline mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-1 h-1 bg-outline rounded-full"></span> Core Directives
-                </h3>
-                <div class="grid grid-cols-2 gap-2 relative">
-                    
-                    <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-primary hover:text-primary transition-colors h-24"
-                            (click)="startAttackPrompt()"
-                            [disabled]="localPlayer.stamina < 1">
-                        <span class="material-symbols-outlined mb-2 text-2xl">swords</span>
-                        <span class="font-label-sm uppercase">Attack</span>
-                    </button>
-                    
-                    <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-secondary hover:text-secondary transition-colors h-24"
-                            (click)="selectBasicAction('DEFEND')"
-                            [disabled]="localPlayer.stamina < 1">
-                        <span class="material-symbols-outlined mb-2 text-2xl">shield</span>
-                        <span class="font-label-sm uppercase">Defend</span>
-                    </button>
-                    
-                    <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-tertiary hover:text-tertiary transition-colors h-24"
-                            (click)="selectBasicAction('DODGE')"
-                            [disabled]="localPlayer.stamina < 2">
-                        <span class="material-symbols-outlined mb-2 text-2xl">directions_run</span>
-                        <span class="font-label-sm uppercase">Dodge</span>
-                    </button>
-                    
-                    <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-primary-container hover:text-primary-container transition-colors h-24"
-                            (click)="selectBasicAction('BREATHE')">
-                        <span class="material-symbols-outlined mb-2 text-2xl">air</span>
-                        <span class="font-label-sm uppercase">Breathe</span>
-                    </button>
+            <app-action-buttons 
+                [stamina]="localPlayer.stamina"
+                [isActionLocked]="(isActionLocked$ | async) ?? false"
+                (actionSelected)="selectBasicAction($event)">
+            </app-action-buttons>
 
-                    <!-- Attack Light/Heavy Overlay -->
-                    <div *ngIf="showAttackPrompt" class="absolute inset-0 bg-surface-container/95 backdrop-blur-sm z-10 flex flex-col p-2">
-                        <h4 class="font-label-sm text-primary text-center mb-2 uppercase">Attack Type</h4>
-                        <div class="grid grid-cols-2 gap-2 flex-1">
-                            <button class="bg-surface-variant border border-outline hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center font-label-sm uppercase"
-                                    (click)="selectBasicAction('ATTACK_LIGHT')">
-                                Light (1 STM)
-                            </button>
-                            <button class="bg-surface-variant border border-outline hover:bg-error hover:text-on-error transition-colors flex items-center justify-center font-label-sm uppercase"
-                                    (click)="selectBasicAction('ATTACK_HEAVY')"
-                                    [disabled]="localPlayer.stamina < 2">
-                                Heavy (2 STM)
-                            </button>
-                        </div>
-                        <button class="text-[10px] text-outline hover:text-error mt-2 uppercase text-center" (click)="showAttackPrompt = false">Cancel</button>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Techniques (Final Fantasy Style) -->
-            <div>
-                <h3 class="font-label-sm text-outline mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-1 h-1 bg-outline rounded-full"></span> Techniques
-                </h3>
-                <div class="space-y-2">
-                    <!-- Technique Row -->
-                    <button *ngFor="let tech of techniques" 
-                            (click)="useTechnique(tech)"
-                            [disabled]="localPlayer.stamina < tech.combat_mechanics.stamina_cost"
-                            class="w-full text-left bg-surface-container-low border-b border-outline/20 p-3 hover:bg-surface-container-highest transition-colors group relative overflow-hidden"
-                            [ngClass]="{'opacity-50 grayscale': localPlayer.stamina < tech.combat_mechanics.stamina_cost}">
-                        
-                        <div class="absolute left-0 top-0 w-1 h-full bg-primary transform -translate-x-full group-hover:translate-x-0 transition-transform"></div>
-                        
-                        <div class="flex justify-between items-center mb-1">
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-outline group-hover:text-primary text-lg transition-colors">{{ tech.visuals_and_roleplay.icon_suggestion || 'auto_awesome' }}</span>
-                                <span class="font-body-md text-on-surface group-hover:text-primary transition-colors">{{ tech.name }}</span>
-                            </div>
-                            <div class="font-label-sm text-tertiary flex items-center gap-1">
-                                {{ tech.combat_mechanics.stamina_cost }} STM
-                            </div>
-                        </div>
-                        <div class="text-[11px] text-on-surface-variant font-mono pl-7 pr-2 line-clamp-2">
-                            {{ tech.description }}
-                        </div>
-                    </button>
-
-                    <div *ngIf="techniques.length === 0" class="text-center p-4 border border-dashed border-outline-variant text-outline font-label-sm">
-                        NO TECHNIQUES EQUIPPED
-                    </div>
-                </div>
-            </div>
+            <app-techniques 
+                [techniques]="techniques"
+                [stamina]="localPlayer.stamina"
+                [isActionLocked]="(isActionLocked$ | async) ?? false"
+                (techniqueSelected)="useTechnique($event)">
+            </app-techniques>
 
         </div>
     </div>

@@ -166,7 +166,31 @@ void GameEngine::resolveCombatAndVitals(FullStatePayload &state) {
     p.isExhausted = (p.stamina < 0);
   }
 
-  // 2. Combat Resolution
+  // 2. Dodge Movement
+  for (size_t i = 0; i < state.playerCount; i++) {
+    Player &p = state.players[i];
+    if (!p.active || p.isFallen || p.currentIntent.type != ActionIntentType::DODGE || p.stamina < 0)
+      continue;
+      
+    int tx = p.currentIntent.targetX;
+    int ty = p.currentIntent.targetY;
+    int dist = chebyshevDistance(p.position[0], p.position[1], tx, ty);
+    
+    if (dist == 1 && tx >= 0 && tx < 9 && ty >= 0 && ty < 9) {
+       bool occupied = false;
+       for (size_t k = 0; k < state.playerCount; k++) {
+          if (state.players[k].active && !state.players[k].isFallen && state.players[k].position[0] == tx && state.players[k].position[1] == ty) {
+             occupied = true; break;
+          }
+       }
+       if (!occupied) {
+          p.position[0] = tx;
+          p.position[1] = ty;
+       }
+    }
+  }
+
+  // 3. Combat Resolution
   // A simplified Phase 1 approach: if you attack, hit anyone in the targeted
   // sector
   for (size_t i = 0; i < state.playerCount; i++) {

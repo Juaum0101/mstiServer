@@ -32,12 +32,32 @@ JsonDocument globalDoc;
 FullStatePayload state;
 int nextSpawnIndex = 0;
 
-const int SPAWN_POINTS[4][2] = {
-  {4, 3}, // closest to center
-  {6, 4}, // mid right
-  {2, 6}, // mid left
-  {0, 4}  // far left edge
-};
+void getSpawnPosition(int index, int max_x, int max_y, int &out_x, int &out_y) {
+    int mid_x = max_x / 2;
+    int mid_y = max_y / 2;
+    // First 4: Corners
+    if (index == 0) { out_x = 0; out_y = 0; }
+    else if (index == 1) { out_x = 0; out_y = max_y; }
+    else if (index == 2) { out_x = max_x; out_y = 0; }
+    else if (index == 3) { out_x = max_x; out_y = max_y; }
+    // Next 4: Mid edges
+    else if (index == 4) { out_x = 0; out_y = mid_y; }
+    else if (index == 5) { out_x = mid_x; out_y = max_y; }
+    else if (index == 6) { out_x = mid_x; out_y = 0; }
+    else if (index == 7) { out_x = max_x; out_y = mid_y; }
+    // Next 4: Inner square
+    else {
+        int offset_x = max_x / 4;
+        int offset_y = max_y / 4;
+        if (offset_x < 1) offset_x = 1;
+        if (offset_y < 1) offset_y = 1;
+        if (index == 8) { out_x = mid_x - offset_x; out_y = max_y - offset_y; }
+        else if (index == 9) { out_x = mid_x - offset_x; out_y = mid_y - offset_y; }
+        else if (index == 10) { out_x = mid_x + offset_x; out_y = max_y - offset_y; }
+        else if (index == 11) { out_x = mid_x + offset_x; out_y = mid_y - offset_y; }
+        else { out_x = mid_x; out_y = mid_y; } // Center Fallback
+    }
+}
 
 void initState() {
   state.gameState.phaseId = PhaseId::READY_PHASE; // LOBBY
@@ -60,6 +80,7 @@ void initState() {
 }
 
 void serializeAndPublishState() {
+  mqtt.publish("game/log", String("serializeAndPublishState START, playerCount: ") + state.playerCount);
   for (size_t targetIdx = 0; targetIdx < state.playerCount; targetIdx++) {
     Player &targetPlayer = state.players[targetIdx];
     if (!targetPlayer.active) continue;
@@ -149,14 +170,21 @@ void serializeAndPublishState() {
       po["isTwoHanding"] = p.isTwoHanding;
       po["isExhausted"] = p.isExhausted;
       po["isFallen"] = p.isFallen;
+      po["isReady"] = p.isReady;
+
+      JsonObject equip = po["equippedItems"].to<JsonObject>();
+      equip["head"] = p.equippedItems.head;
+      equip["torso"] = p.equippedItems.torso;
+      equip["leftHand"] = p.equippedItems.leftHand;
+      equip["rightHand"] = p.equippedItems.rightHand;
+
+      JsonObject mut = po["mutations"].to<JsonObject>();
+      mut["hasAny"] = p.mutations.hasAny;
+      mut["hasAlpha"] = p.mutations.hasAlpha;
+      mut["hasBeta"] = p.mutations.hasBeta;
       po["nextHitCritical"] = p.nextHitCritical;
       po["isReady"] = p.isReady;
 
-      JsonObject eq = po["equippedItems"].to<JsonObject>();
-      eq["head"] = p.equippedItems.head;
-      eq["torso"] = p.equippedItems.torso;
-      eq["leftHand"] = p.equippedItems.leftHand;
-      eq["rightHand"] = p.equippedItems.rightHand;
     }
 
     String payload;
@@ -165,6 +193,7 @@ void serializeAndPublishState() {
     String topic = "game/state/" + targetPlayer.playerId;
     mqtt.publish(topic.c_str(), payload.c_str(), 0, true); // QoS 0, retain true
   }
+  mqtt.publish("game/log", "serializeAndPublishState COMPLETE.");
 }
 
 // resolveTurn is now handled by GameEngine::executeTurn
@@ -368,27 +397,72 @@ void setup() {
     for (size_t i = 0; i < state.playerCount; i++) {
       if (state.players[i].active && state.players[i].playerId == playerId) {
         state.players[i].isReady = ready;
-        if (ready && state.players[i].position[0] == -1 && nextSpawnIndex < 4) {
-           state.players[i].position[0] = SPAWN_POINTS[nextSpawnIndex][0];
-           state.players[i].position[1] = SPAWN_POINTS[nextSpawnIndex][1];
+        if (ready && state.players[i].position[0] == -1 && nextSpawnIndex < 8) {
+           int out_x, out_y;
+           getSpawnPosition(nextSpawnIndex, 8, 8, out_x, out_y);
+           state.players[i].position[0] = out_x;
+           state.players[i].position[1] = out_y;
            nextSpawnIndex++;
         }
         Serial.printf("Player %s is %s.\n", state.players[i].playerName.c_str(), ready ? "ready" : "not ready");
-        serializeAndPublishState();
         break;
       }
     }
+
+    bool allReady = true;
+    int activeCount = 0;
+    for (size_t i = 0; i < state.playerCount; i++) {
+      if (state.players[i].active) {
+        activeCount++;
+        if (!state.players[i].isReady) {
+          allReady = false;
+        }
+      }
+    }
+
+    if (allReady && activeCount > 0 && state.gameState.phaseId == PhaseId::READY_PHASE) {
+      state.gameState.phaseId = PhaseId::MOVEMENT_CHOICE;
+      state.gameState.turnNumber = 1;
+      for (size_t i = 0; i < MAX_PLAYERS; i++) {
+        if (state.players[i].active) {
+          state.players[i].isReady = false;
+          if (state.players[i].position[0] == -1) {
+             int out_x, out_y;
+             getSpawnPosition(nextSpawnIndex, 8, 8, out_x, out_y);
+             state.players[i].position[0] = out_x;
+             state.players[i].position[1] = out_y;
+             if (nextSpawnIndex < 8) nextSpawnIndex++;
+          }
+          state.players[i].targetPosition[0] = state.players[i].position[0];
+          state.players[i].targetPosition[1] = state.players[i].position[1];
+          state.players[i].facingDirection = "N";
+        }
+      }
+      Serial.println("All players ready. Match Started!");
+    }
+
+    serializeAndPublishState();
   });
 
   mqtt.subscribe("game/admin", [](const char *topic, const char *payload) {
+    mqtt.publish("game/log", String("Received admin payload: ") + payload);
     globalDoc.clear();
     DeserializationError error = deserializeJson(globalDoc, payload);
-    if (error)
+    if (error) {
+      mqtt.publish("game/log", String("deserializeJson() failed: ") + error.c_str());
       return;
+    }
 
     String command = globalDoc["command"] | "";
+    mqtt.publish("game/log", String("Command parsed: ") + command);
+
+    if (command == "START_MATCH") {
+      mqtt.publish("game/log", String("Phase check: ") + phaseIdToString(state.gameState.phaseId));
+    }
+
     if (command == "START_MATCH" &&
         state.gameState.phaseId == PhaseId::READY_PHASE) {
+      mqtt.publish("game/log", "Entering START_MATCH block...");
       state.gameState.phaseId = PhaseId::MOVEMENT_CHOICE;
       state.gameState.turnNumber = 1;
 
@@ -397,9 +471,11 @@ void setup() {
           state.players[i].isReady = false;
           // Set target position equal to their assigned spawn position
           if (state.players[i].position[0] == -1) {
-             state.players[i].position[0] = SPAWN_POINTS[nextSpawnIndex][0];
-             state.players[i].position[1] = SPAWN_POINTS[nextSpawnIndex][1];
-             if (nextSpawnIndex < 3) nextSpawnIndex++;
+             int out_x, out_y;
+             getSpawnPosition(nextSpawnIndex, 8, 8, out_x, out_y);
+             state.players[i].position[0] = out_x;
+             state.players[i].position[1] = out_y;
+             if (nextSpawnIndex < 8) nextSpawnIndex++;
           }
           state.players[i].targetPosition[0] = state.players[i].position[0];
           state.players[i].targetPosition[1] = state.players[i].position[1];
@@ -407,8 +483,10 @@ void setup() {
           state.players[i].facingDirection = "N";
         }
       }
+      mqtt.publish("game/log", "Positions assigned. Serializing...");
       Serial.println("Match Started!");
       serializeAndPublishState();
+      mqtt.publish("game/log", "START_MATCH complete.");
     } else if (command == "RESET_GAME") {
       initState();
       Serial.println("Game Reset to Lobby.");
@@ -424,8 +502,8 @@ void setup() {
       return;
     }
 
-    // Only accept actions during ACTION_PHASE
-    if (state.gameState.phaseId != PhaseId::ACTION_PHASE)
+    // Only accept actions during CHOICE phases
+    if (state.gameState.phaseId != PhaseId::MOVEMENT_CHOICE && state.gameState.phaseId != PhaseId::ACTION_CHOICE)
       return;
 
     // Parse intent payload
@@ -492,19 +570,25 @@ void loop() {
   mqtt.loop();
 
   // Synchronous Polled Phase Check
-  if (state.gameState.phaseId == PhaseId::ACTION_PHASE) {
+  if (state.gameState.phaseId == PhaseId::MOVEMENT_CHOICE || state.gameState.phaseId == PhaseId::ACTION_CHOICE) {
     bool allReady = true;
+    int activeCount = 0;
     for (size_t i = 0; i < state.playerCount; i++) {
-      if (state.players[i].active && !state.players[i].isReady) {
-        allReady = false;
-        break;
+      if (state.players[i].active) {
+        activeCount++;
+        if (!state.players[i].isReady) {
+          allReady = false;
+          break;
+        }
       }
     }
 
-    if (allReady) {
-      state.gameState.phaseId = PhaseId::RESOLUTION_PHASE;
-      GameEngine::executeTurn(
-          state); // Synchronous resolution avoiding race conditions
+    if (allReady && activeCount > 0) {
+      if (state.gameState.phaseId == PhaseId::MOVEMENT_CHOICE) {
+        GameEngine::executeMovementPhase(state);
+      } else {
+        GameEngine::executeActionPhase(state);
+      }
       serializeAndPublishState();
     }
   }

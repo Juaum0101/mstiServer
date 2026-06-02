@@ -19,10 +19,23 @@ export interface ActionIntent {
   staminaInflux?: number;
 }
 
+export interface GameConfig {
+  mutationsAllowed?: boolean;
+  marksActive?: boolean;
+  techniquesEnabled?: boolean;
+  classVisibility?: boolean;
+  namesVisible?: boolean;
+  newbieMode?: boolean;
+  fogRange?: number;
+  perTurnLimit?: number;
+  matchTimer?: number;
+}
+
 export interface GameState {
   phaseId: PhaseId;
   turnNumber: number;
   brokerReady: boolean;
+  config?: GameConfig;
 }
 
 export interface EquippedItems {

@@ -7,6 +7,18 @@
       "skillPath": ".claude/skills/PlatformIO/SKILL.md",
       "computedHash": "d29740a81c256fb2b9581bd7868d17fc87b77717e707467b822551f04813a9e3"
     },
+    "angular-developer": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-developer/SKILL.md",
+      "computedHash": "766b27c6654b09c93f245a819ac01dc88e68844535997dbd2c980c242a9e8625"
+    },
+    "angular-testing": {
+      "source": "analogjs/angular-skills",
+      "sourceType": "github",
+      "skillPath": "skills/angular-testing/SKILL.md",
+      "computedHash": "f0afa362dccf84f959eaec0572324a1a212765c0e90c1c2bf9c05b6f87a0d165"
+    },
     "clang": {
       "source": "mohitmishra786/low-level-dev-skills",
       "sourceType": "github",

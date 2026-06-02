@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 #include <array>
 
-constexpr size_t MAX_PLAYERS = 4;
+constexpr size_t MAX_PLAYERS = 16;
 constexpr size_t MAX_ACTIVE_MEMORY = 7;
 
 enum class PhaseId {
