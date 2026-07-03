@@ -98,7 +98,10 @@ export class GameStateService {
       console.log('Joining game', payload);
       this.localPlayerName = payload.playerName;
       localStorage.setItem('msk_player_name', this.localPlayerName);
-      this.client.publish('game/join', JSON.stringify(payload));
+      this.client.publish('game/join', JSON.stringify({
+        ...payload,
+        playerId: this.localPlayerId
+      }));
       console.log('Game joined');
     }
   }

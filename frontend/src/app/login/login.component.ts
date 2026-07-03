@@ -36,17 +36,7 @@ export class LoginComponent {
 
   login() {
     if (!this.playerName.trim()) return;
-    this.gameStateService.localPlayerName = this.playerName;
-    
-    const payload = {
-      playerId: this.gameStateService.localPlayerId,
-      playerName: this.playerName,
-      equippedItems: { head: 'None', torso: 'None', leftHand: 'None', rightHand: 'None' },
-      mutations: { hasAny: false, hasAlpha: false, hasBeta: false },
-      isTwoHanding: false
-    };
-    
-    this.gameStateService.joinGame(payload);
+    this.gameStateService.joinGame({ playerName: this.playerName });
     this.router.navigate(['/lobby']);
   }
 }
