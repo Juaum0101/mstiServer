@@ -9,6 +9,8 @@ import { PlayerStatusComponent } from './components/player-status/player-status.
 import { ComLinkComponent } from './components/com-link/com-link.component';
 import { ActionButtonsComponent } from './components/action-buttons/action-buttons.component';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-tactical-interface',
   standalone: true,
@@ -21,9 +23,10 @@ import { ActionButtonsComponent } from './components/action-buttons/action-butto
   ],
   templateUrl: './tactical-interface.component.html',
 })
-export class TacticalInterfaceComponent implements OnInit {
+export class TacticalInterfaceComponent implements OnInit, OnDestroy {
   private gameStateService = inject(GameStateService);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   state$: Observable<FullStatePayload | null> = this.gameStateService.state$;
   
@@ -70,6 +73,11 @@ export class TacticalInterfaceComponent implements OnInit {
           lastPhase = state.gameState.phaseId;
           this.turnSeconds = state.gameState.config?.perTurnLimit || 60;
           
+          if (lastPhase === 'READY_PHASE') {
+             this.router.navigate(['/login']);
+             return;
+          }
+
           if (lastPhase === 'MOVEMENT_CHOICE') {
              this.calculateHighlights('MOVEMENT_CHOICE');
           } else {
@@ -134,7 +142,7 @@ export class TacticalInterfaceComponent implements OnInit {
              this.dispatch(ActionIntentType.MOVEMENT as any, me.position[0], me.position[1], 'N');
            }
         } else if (state.gameState.phaseId === 'ACTION_CHOICE') {
-           this.dispatch(ActionIntentType.BREATHE as any);
+           this.dispatch(ActionIntentType.DEFEND as any);
         }
       }
     }).unsubscribe();
@@ -209,8 +217,8 @@ export class TacticalInterfaceComponent implements OnInit {
     const actionType = actionTypeStr as ActionIntentType;
     this.showAttackPrompt = false;
     
-    // Just dispatch directly for Breathe or Defend (Targeting not strictly needed for self)
-    if (actionType === ActionIntentType.BREATHE || actionType === ActionIntentType.DEFEND) {
+    // Just dispatch directly for Defend (Targeting not strictly needed for self)
+    if (actionType === ActionIntentType.DEFEND) {
       this.cancelTargeting();
       this.dispatch(actionType);
       return;
@@ -258,8 +266,8 @@ export class TacticalInterfaceComponent implements OnInit {
   }
 
   useTechnique(tech: any) {
-    // Basic dispatch for techniques
-    this.dispatch(ActionIntentType.ATTACK_LIGHT);
+    // Basic dispatch for techniques (Not used in Fists mode)
+    this.dispatch(ActionIntentType.ATTACK);
   }
 
   forfeit() {

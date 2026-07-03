@@ -1,4 +1,21 @@
-<div class="min-h-screen md:h-screen flex flex-col md:flex-row bg-background md:overflow-hidden overflow-auto" *ngIf="state$ | async as state">
+<div class="min-h-screen md:h-screen flex flex-col md:flex-row bg-background md:overflow-hidden overflow-auto relative" *ngIf="state$ | async as state">
+
+    <!-- GAME OVER / VICTORY OVERLAY -->
+    @if (state.gameState.phaseId === 'GAME_OVER') {
+        <div class="absolute inset-0 bg-surface-container-highest/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-8 text-center">
+            <h1 class="font-headline-lg text-primary mb-4 uppercase tracking-widest text-4xl">MATCH CONCLUDED</h1>
+            <p class="text-on-surface font-title-md mb-8 text-xl">
+                @if ((localPlayer$ | async)?.hp! > 0) {
+                    VICTORY ACHIEVED.
+                } @else {
+                    YOU HAVE FALLEN.
+                }
+            </p>
+            <div class="text-outline animate-pulse font-label-sm tracking-widest uppercase">
+                Awaiting Grid Reset...
+            </div>
+        </div>
+    }
 
     <!-- LEFT COLUMN: Grid & Timers -->
     <div class="w-full md:flex-1 flex flex-col relative p-2 md:p-8 shrink-0">
@@ -83,8 +100,16 @@
         <app-player-status></app-player-status>
 
         <!-- Scrollable Action Area -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+        <div class="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar" 
+             [class.pointer-events-none]="localPlayer.isFallen"
+             [class.opacity-50]="localPlayer.isFallen">
             
+            @if (localPlayer.isFallen) {
+                <div class="bg-error-container text-on-error-container p-4 text-center font-label-sm uppercase tracking-widest">
+                    Vessel Destroyed. Comm-Link Only.
+                </div>
+            }
+
             <app-action-buttons 
                 [stamina]="localPlayer.stamina"
                 [isActionLocked]="(isActionLocked$ | async) ?? false"
