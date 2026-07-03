@@ -20,7 +20,7 @@
             
             <!-- Hidden Forfeit -->
             <button (click)="forfeit()" class="opacity-0 hover:opacity-20 transition-opacity w-8 h-8 flex items-center justify-center text-error cursor-pointer absolute top-2 right-2 md:top-4 md:right-4 z-10">
-                <span class="material-symbols-outlined">flag</span>
+                [F]
             </button>
         </div>
 
@@ -54,7 +54,7 @@
                         <span class="text-on-surface font-mono">{{ hoveredPlayer.currentIntent.type }}</span>
                       } @else {
                         <span class="text-tertiary flex items-center gap-1 font-mono">
-                            <span class="material-symbols-outlined text-[10px]">lock</span> Locked
+                            Locked
                         </span>
                       }
                   </div>
@@ -64,7 +64,7 @@
                         <span class="text-on-surface font-mono">+{{ hoveredPlayer.staminaInflux }}</span>
                       } @else {
                         <span class="text-tertiary flex items-center gap-1 font-mono">
-                            <span class="material-symbols-outlined text-[10px]">visibility_off</span> Hidden
+                            Hidden
                         </span>
                       }
                   </div>
@@ -90,13 +90,6 @@
                 [isActionLocked]="(isActionLocked$ | async) ?? false"
                 (actionSelected)="selectBasicAction($event)">
             </app-action-buttons>
-
-            <app-techniques 
-                [techniques]="techniques"
-                [stamina]="localPlayer.stamina"
-                [isActionLocked]="(isActionLocked$ | async) ?? false"
-                (techniqueSelected)="useTechnique($event)">
-            </app-techniques>
 
         </div>
     </div>

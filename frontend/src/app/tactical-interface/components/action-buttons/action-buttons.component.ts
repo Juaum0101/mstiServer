@@ -15,28 +15,24 @@ import { CommonModule } from '@angular/common';
             <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-primary hover:text-primary transition-colors h-24"
                     (click)="showAttackPrompt = true"
                     [disabled]="stamina() < 1 || isActionLocked()">
-                <span class="material-symbols-outlined mb-2 text-2xl">swords</span>
                 <span class="font-label-sm uppercase">Attack</span>
             </button>
             
             <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-secondary hover:text-secondary transition-colors h-24"
                     (click)="actionSelected.emit('DEFEND')"
                     [disabled]="stamina() < 1 || isActionLocked()">
-                <span class="material-symbols-outlined mb-2 text-2xl">shield</span>
                 <span class="font-label-sm uppercase">Defend</span>
             </button>
             
             <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-tertiary hover:text-tertiary transition-colors h-24"
                     (click)="actionSelected.emit('DODGE')"
                     [disabled]="stamina() < 2 || isActionLocked()">
-                <span class="material-symbols-outlined mb-2 text-2xl">directions_run</span>
                 <span class="font-label-sm uppercase">Dodge</span>
             </button>
             
             <button class="blueprint-card p-3 flex flex-col items-center justify-center text-on-surface hover:bg-surface-bright hover:border-primary-container hover:text-primary-container transition-colors h-24"
                     (click)="actionSelected.emit('BREATHE')"
                     [disabled]="isActionLocked()">
-                <span class="material-symbols-outlined mb-2 text-2xl">air</span>
                 <span class="font-label-sm uppercase">Breathe</span>
             </button>
 

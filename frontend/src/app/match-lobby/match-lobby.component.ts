@@ -20,15 +20,7 @@ export class MatchLobbyComponent implements OnInit {
   playerId = this.gameStateService.localPlayerId;
   playerName = this.gameStateService.localPlayerName;
 
-  head = 'None';
-  torso = 'None';
-  leftHand = 'None';
-  rightHand = 'None';
-  hasAlpha = false;
-  hasBeta = false;
-
   ngOnInit() {
-    // If not logged in (no name), go to login
     if (!this.playerName) {
       this.router.navigate(['/login']);
       return;
@@ -36,48 +28,11 @@ export class MatchLobbyComponent implements OnInit {
 
     this.state$.subscribe(state => {
       if (state) {
-         const me = state.players.find(p => p.playerId === this.playerId && p.active);
-         if (me) {
-            this.head = me.equippedItems.head || 'None';
-            this.torso = me.equippedItems.torso || 'None';
-            this.leftHand = me.equippedItems.leftHand || 'None';
-            this.rightHand = me.equippedItems.rightHand || 'None';
-            this.hasAlpha = me.mutations.hasAlpha;
-            this.hasBeta = me.mutations.hasBeta;
-         }
-         
          if (state.gameState.phaseId !== 'READY_PHASE') {
            this.router.navigate(['/tactical']);
          }
       }
     });
-  }
-
-  updateEquipment() {
-    const payload = {
-      playerId: this.playerId,
-      head: this.head,
-      torso: this.torso,
-      leftHand: this.leftHand,
-      rightHand: this.rightHand
-    };
-    this.gameStateService.sendMessage('game/equip', payload);
-  }
-
-  // Mutations require rejoin currently since game/equip doesn't handle them
-  updateMutations() {
-    const payload = {
-      playerId: this.playerId,
-      playerName: this.playerName,
-      equippedItems: { head: this.head, torso: this.torso, leftHand: this.leftHand, rightHand: this.rightHand },
-      mutations: {
-        hasAny: this.hasAlpha || this.hasBeta,
-        hasAlpha: this.hasAlpha,
-        hasBeta: this.hasBeta
-      },
-      isTwoHanding: (this.leftHand !== 'None' && this.leftHand === this.rightHand)
-    };
-    this.gameStateService.joinGame(payload);
   }
 
   getActivePlayers(state: FullStatePayload | null) {
@@ -87,5 +42,10 @@ export class MatchLobbyComponent implements OnInit {
 
   voteToStart() {
     this.gameStateService.sendMessage('lobby/vote', { playerId: this.playerId, ready: true });
+  }
+
+  quitLobby() {
+    this.gameStateService.sendMessage('lobby/quit', { playerId: this.playerId });
+    this.router.navigate(['/login']);
   }
 }

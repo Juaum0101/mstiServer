@@ -10,7 +10,7 @@ import { FullStatePayload } from '../../../models/game.models';
   template: `
     <div class="blueprint-card bg-surface-container p-3 h-32 md:h-48 flex flex-col shrink-0">
         <h3 class="font-label-sm text-primary mb-2 uppercase tracking-widest flex items-center gap-2 border-b border-outline/30 pb-2">
-            <span class="material-symbols-outlined text-[14px]">terminal</span> COM-LINK
+            COM-LINK
         </h3>
         <div class="flex-1 overflow-y-auto custom-scrollbar flex flex-col-reverse space-y-reverse space-y-1">
             @for (log of logs; track $index) {

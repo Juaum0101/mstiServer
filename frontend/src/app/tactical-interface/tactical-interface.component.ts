@@ -8,7 +8,6 @@ import { TacticalGridComponent } from './components/tactical-grid/tactical-grid.
 import { PlayerStatusComponent } from './components/player-status/player-status.component';
 import { ComLinkComponent } from './components/com-link/com-link.component';
 import { ActionButtonsComponent } from './components/action-buttons/action-buttons.component';
-import { TechniquesComponent } from './components/techniques/techniques.component';
 
 @Component({
   selector: 'app-tactical-interface',
@@ -18,8 +17,7 @@ import { TechniquesComponent } from './components/techniques/techniques.componen
     TacticalGridComponent,
     PlayerStatusComponent,
     ComLinkComponent,
-    ActionButtonsComponent,
-    TechniquesComponent
+    ActionButtonsComponent
   ],
   templateUrl: './tactical-interface.component.html',
 })

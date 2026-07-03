@@ -1,82 +1,8 @@
-<div class="max-w-[1200px] mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
-  
-  <!-- BUILD SELECTION STEP -->
-  <div class="flex-1 blueprint-card bg-surface-container-low p-6 md:p-8">
-    <h2 class="font-headline-lg text-primary mb-6 flex items-center gap-2">
-      <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">swords</span>
-      Vessel Configuration
-    </h2>
-
-    <div class="space-y-6">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Head</label>
-          <select [(ngModel)]="head" (change)="updateEquipment()" class="input-field font-body-md">
-            <option value="None">None</option>
-            <option value="Iron Helm">Iron Helm</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Torso</label>
-          <select [(ngModel)]="torso" (change)="updateEquipment()" class="input-field font-body-md">
-            <option value="None">None</option>
-            <option value="Chainmail">Chainmail</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Left Hand</label>
-          <select [(ngModel)]="leftHand" (change)="updateEquipment()" class="input-field font-body-md">
-            <option value="None">None</option>
-            <option value="Longsword">Longsword</option>
-            <option value="Shield">Shield</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-label-sm text-on-surface-variant block mb-2 uppercase">Right Hand</label>
-          <select [(ngModel)]="rightHand" (change)="updateEquipment()" class="input-field font-body-md">
-            <option value="None">None</option>
-            <option value="Longsword">Longsword</option>
-            <option value="Shield">Shield</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="bg-surface-container-highest p-4 border border-outline-variant rounded space-y-4">
-        <h3 class="font-title-md text-secondary">Mutations</h3>
-        
-        <div class="flex items-center justify-between group">
-          <span class="font-body-md text-on-surface">Alpha Mutation (-2 Max HP)</span>
-          <label class="flex items-center cursor-pointer">
-            <div class="relative">
-              <input type="checkbox" [(ngModel)]="hasAlpha" (change)="updateMutations()" class="sr-only toggle-checkbox">
-              <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
-              <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
-            </div>
-          </label>
-        </div>
-        
-        <div class="flex items-center justify-between group">
-          <span class="font-body-md text-on-surface">Beta Mutation (-2 Max HP)</span>
-          <label class="flex items-center cursor-pointer">
-            <div class="relative">
-              <input type="checkbox" [(ngModel)]="hasBeta" (change)="updateMutations()" class="sr-only toggle-checkbox">
-              <div class="block bg-surface-container-highest w-10 h-6 rounded-full border border-outline-variant"></div>
-              <div class="toggle-label absolute left-1 top-1 bg-outline w-4 h-4 rounded-full transition-transform duration-300"></div>
-            </div>
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-
+<div class="max-w-[600px] mx-auto p-4 md:p-8 flex flex-col gap-8">
   <!-- LOBBY ROSTER STEP -->
   <div class="flex-1 blueprint-card bg-surface-container-low p-6 md:p-8" *ngIf="state$ | async as state">
     <div class="flex items-center justify-between mb-6 border-b border-outline/30 pb-4">
       <h3 class="font-title-md text-primary flex items-center gap-2">
-          <span class="material-symbols-outlined text-lg">groups</span>
           Lobby Roster
       </h3>
       <span class="font-label-sm text-outline">{{ getActivePlayers(state).length }} Players</span>
@@ -86,26 +12,25 @@
       <li *ngFor="let p of getActivePlayers(state)" class="flex flex-col sm:flex-row sm:items-center justify-between bg-surface-variant/50 p-4 border border-outline-variant rounded gap-4">
         <div>
           <span class="font-body-md text-on-surface">{{p.playerName}}</span>
-          <div class="font-label-sm text-outline text-[10px] uppercase mt-1">
-            L: {{p.equippedItems.leftHand}} | R: {{p.equippedItems.rightHand}}
-            <span *ngIf="p.mutations.hasAny" class="text-error ml-2">MUTATED</span>
-          </div>
         </div>
         <div class="flex items-center gap-1" [ngClass]="p.isReady ? 'text-primary' : 'text-tertiary'">
-          <span class="material-symbols-outlined text-sm">{{p.isReady ? 'check_circle' : 'build'}}</span>
-          <span class="font-label-sm text-[10px] uppercase">{{p.isReady ? 'Ready' : 'Modifying'}}</span>
+          <span class="font-label-sm text-[10px] uppercase">{{p.isReady ? '[Ready]' : '[Waiting]'}}</span>
         </div>
       </li>
     </ul>
 
-    <button (click)="voteToStart()" class="gold-btn w-full bg-primary text-on-primary font-title-md py-4 hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
-      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-      Vote to Start
-    </button>
+    <div class="flex flex-col gap-4">
+        <button (click)="voteToStart()" class="gold-btn w-full bg-primary text-on-primary font-title-md py-4 hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+          Vote to Start
+        </button>
+
+        <button (click)="quitLobby()" class="w-full border border-error text-error font-title-md py-4 hover:bg-error hover:text-on-error transition-colors flex items-center justify-center gap-2">
+          Quit
+        </button>
+    </div>
 
     <p *ngIf="state.gameState.phaseId !== 'READY_PHASE'" class="text-center mt-6 text-primary animate-pulse font-label-sm tracking-widest uppercase">
       MATCH STARTED. PROCEED TO TACTICAL.
     </p>
   </div>
-
 </div>

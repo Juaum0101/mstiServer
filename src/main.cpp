@@ -409,18 +409,18 @@ void setup() {
       }
     }
 
-    bool allReady = true;
     int activeCount = 0;
+    int readyCount = 0;
     for (size_t i = 0; i < state.playerCount; i++) {
       if (state.players[i].active) {
         activeCount++;
-        if (!state.players[i].isReady) {
-          allReady = false;
+        if (state.players[i].isReady) {
+          readyCount++;
         }
       }
     }
 
-    if (allReady && activeCount > 0 && state.gameState.phaseId == PhaseId::READY_PHASE) {
+    if (activeCount > 1 && readyCount > (activeCount / 2) && state.gameState.phaseId == PhaseId::READY_PHASE) {
       state.gameState.phaseId = PhaseId::MOVEMENT_CHOICE;
       state.gameState.turnNumber = 1;
       for (size_t i = 0; i < MAX_PLAYERS; i++) {
@@ -438,9 +438,28 @@ void setup() {
           state.players[i].facingDirection = "N";
         }
       }
-      Serial.println("All players ready. Match Started!");
+      Serial.println("Majority players ready. Match Started!");
     }
 
+    serializeAndPublishState();
+  });
+
+  mqtt.subscribe("lobby/quit", [](const char *topic, const char *payload) {
+    globalDoc.clear();
+    DeserializationError error = deserializeJson(globalDoc, payload);
+    if (error) return;
+
+    String playerId = globalDoc["playerId"] | "";
+    if (playerId == "") return;
+
+    for (size_t i = 0; i < state.playerCount; i++) {
+      if (state.players[i].active && state.players[i].playerId == playerId) {
+        state.players[i].active = false;
+        state.players[i].isReady = false;
+        Serial.printf("Player %s quit the lobby.\n", state.players[i].playerName.c_str());
+        break;
+      }
+    }
     serializeAndPublishState();
   });
 

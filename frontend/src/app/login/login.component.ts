@@ -12,7 +12,6 @@ import { GameStateService } from '../services/game-state.service';
   <div class="max-w-[600px] mx-auto p-8 mt-20">
     <div class="blueprint-card bg-surface-container-low p-8">
       <h2 class="font-headline-lg text-primary mb-6 flex items-center gap-2">
-        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">terminal</span>
         System Login
       </h2>
       <p class="text-on-surface-variant mb-6">Enter your operator callsign to connect to the Morningstar grid.</p>

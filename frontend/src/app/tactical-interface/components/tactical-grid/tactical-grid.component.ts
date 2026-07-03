@@ -49,8 +49,7 @@ import { FullStatePayload, Player } from '../../../models/game.models';
           <div class="absolute bottom-0 w-full text-center pointer-events-none z-10">
               <div class="inline-block blueprint-card bg-surface-container-high/90 px-6 py-3 border-primary backdrop-blur-sm shadow-xl">
                   <span class="font-label-sm text-primary uppercase flex items-center gap-2">
-                      <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">my_location</span>
-                      Select Target Square
+                      [Target] Select Target Square
                   </span>
                   <button class="pointer-events-auto text-[10px] text-outline hover:text-error mt-1 underline" (click)="cancelTargeting.emit()">Cancel</button>
               </div>

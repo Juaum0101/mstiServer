@@ -15,14 +15,7 @@ void GameEngine::initializePlayer(Player &p) {
 }
 
 int GameEngine::calculateMaxHp(const Player &p) {
-  int maxHp = 30; // Base
-  if (p.mutations.hasAny)
-    maxHp -= 5;
-  if (p.mutations.hasAlpha)
-    maxHp -= 6;
-  if (p.mutations.hasBeta)
-    maxHp -= 2;
-  return maxHp;
+  return 5;
 }
 
 int GameEngine::getWeaponRating(const String &itemName) {
