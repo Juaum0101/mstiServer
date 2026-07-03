@@ -9,6 +9,7 @@
   "dependencies": {
     "aedes": "^0.50.0",
     "aedes-server-factory": "^0.2.0",
+    "puppeteer": "^25.3.0",
     "ws": "^8.13.0"
   }
 }
